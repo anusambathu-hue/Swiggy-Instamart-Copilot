@@ -1,9 +1,22 @@
-# Customer Intelligence & Support Copilot — Teaching Kit
+# Customer Intelligence & Support Copilot 
 
-> Educational implementation of the supplied fictional Instamart-style capstone. All generated records are synthetic; no real customer data, hosted LLM, API key, or network call is needed.
+This project simulates a customer support and business intelligence system for an online grocery platform. It uses synthetic customer and order data to analyze customer behavior, predict customer inactivity, automate ticket routing, and answer policy-related questions.
 
-## Learning outcomes
-Students learn to (1) fetch/read CSV exports and audit data, (2) clean and persist trusted tables in SQLite, (3) write SQL and pandas analytics, (4) segment customers and train a leakage-aware lapse model, (5) redact PII and triage text with retries/output validation, and (6) retrieve policy passages and execute bounded database-backed tools.
+The project is designed for learning purposes and does not use any real customer data or external AI services.
+
+## Objectives
+
+The project demonstrates how to:
+
+Load and clean customer and order data.
+Store cleaned data in a SQLite database.
+Perform customer analytics using SQL and Python.
+Segment customers based on purchasing behavior.
+Predict customers who may stop ordering.
+Protect customer privacy through data masking.
+Automatically classify support tickets.
+Retrieve company policies using a simple Retrieval-Augmented Generation (RAG) approach.
+Process refund requests using predefined business rules.
 
 ## Setup and run
 Python 3.11+ recommended.
@@ -41,7 +54,7 @@ Open `notebooks/Customer_Intelligence_Support_Copilot.ipynb` and run cells from 
 5. Run assertions before downstream modelling. A failed assertion should stop the pipeline rather than silently propagate bad data.
 
 ## Part A — Data foundation
-The pipeline standardizes city/gender, treats invalid ages as missing, resolves duplicate orders by keeping the latest timestamp, imputes missing amounts from catalogue price, sets negative delivery times to missing and imputes only completed-order delivery durations by product category. Review every rule before teaching; the capstone handout's numeric checkpoints should be used as acceptance tests.
+The data pipeline cleans and standardizes the data by making city and gender values consistent, treating invalid ages as missing, removing duplicate orders while keeping the latest record, filling missing order amounts using product prices, and correcting delivery time information. Missing delivery times are estimated only for completed orders within the same product category. All cleaning rules should be checked carefully and validated using the capstone's expected results.
 
 ## Part B — Segments and lapse
 RFM uses completed orders and a fixed snapshot date. K-means diagnostics compare K=2..8; the notebook starts with K=4 for interpretable teaching. Lapse features use orders strictly before 2025-09-01, while the label uses September outcomes. The pipeline uses a preprocessing Pipeline fitted on training rows, GridSearchCV and a saved joblib model. The Premium retention list is illustrative only because the Premium label uses the whole RFM window and is post-hoc; it is not a leakage-free evaluation.
