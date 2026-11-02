@@ -57,13 +57,13 @@ Open `notebooks/Customer_Intelligence_Support_Copilot.ipynb` and run cells from 
 The data pipeline cleans and standardizes the data by making city and gender values consistent, treating invalid ages as missing, removing duplicate orders while keeping the latest record, filling missing order amounts using product prices, and correcting delivery time information. Missing delivery times are estimated only for completed orders within the same product category. All cleaning rules should be checked carefully and validated using the capstone's expected results.
 
 ## Part B — Segments and lapse
-RFM uses completed orders and a fixed snapshot date. K-means diagnostics compare K=2..8; the notebook starts with K=4 for interpretable teaching. Lapse features use orders strictly before 2025-09-01, while the label uses September outcomes. The pipeline uses a preprocessing Pipeline fitted on training rows, GridSearchCV and a saved joblib model. The Premium retention list is illustrative only because the Premium label uses the whole RFM window and is post-hoc; it is not a leakage-free evaluation.
+RFM analysis is performed using completed orders and a fixed reference date. Customer segmentation is done using K-Means clustering, where different cluster values (K=2 to K=8) are evaluated, and K=4 is chosen for easier interpretation. For lapse prediction, only orders before September 1, 2025 are used as features, while customer activity during September is used as the target outcome. The model is built using a preprocessing pipeline, GridSearchCV for parameter tuning, and a saved Joblib model. The Premium customer retention list is provided for demonstration purposes only because the Premium label is calculated using the full RFM period and may include future information.
 
 ## Part C — Ticket triage and privacy
-Empty and overlong tickets are skipped before model calls. Email, phone and order ID patterns are redacted before prompting. Retries handle simulated transient errors. JSON category values are allow-listed; malformed outputs are accepted only when exactly one allowed category is detectable using `re.findall`. Human review receives guardrail/invalid/budget cases, fraud goes to security, premium customers go to the premium desk, and the rest go to the support queue.
+Support tickets that are empty or too long are ignored before processing. Sensitive information such as email addresses, phone numbers, and order IDs is removed to protect customer privacy. The system automatically retries if temporary errors occur. Ticket categories must match a predefined list of valid categories. If the output is unclear or invalid, the ticket is sent for manual review. Fraud-related tickets are routed to the security team, premium customer tickets go to the premium support desk, and all other tickets are sent to the general support queue.
 
 ## Part D — Policy retrieval and refund tools
-Policy documents are chunked with overlap, represented with `TfidfVectorizer`, and ranked using cosine similarity. The offline mock returns context-derived sentences. Refund rules are implemented in Python tools backed by SQLite: completed orders delivered in over 45 minutes qualify for a full refund; orders over INR 1000 escalate instead of auto-issuing. This is a teaching simulation, not a payment integration.
+Policy documents are divided into smaller sections and converted into searchable text using TF-IDF. The most relevant sections are identified using similarity scoring. The system then generates responses based on the retrieved policy information. Refund requests are checked against rules stored in a SQLite database. Orders delivered more than 45 minutes late qualify for a full refund, while refunds above INR 1000 require manual review. This project is a learning simulation and does not process real payments.
 
 ## GitHub suggestions
 These public repositories/documentation projects are useful for learning concepts; do not copy a student's capstone solution. Adapt the patterns and cite the source in your notes:
@@ -75,7 +75,19 @@ These public repositories/documentation projects are useful for learning concept
 - scikit-learn text feature extraction guide: https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction.
 
 ## Limitations and next steps
-- This is a teaching implementation and may need adjustment to match every numeric checkpoint in a strict grading rubric; compare actual outputs with the supplied brief and investigate differences rather than hardcoding expected answers.
-- The offline mock model is deterministic rule-based simulation, not a real language model.
-- The refund ledger is a local JSONL audit trail, not a real transaction system.
-- Production work would add access controls, secure secret management, monitoring, schema contracts, data lineage, model drift checks and human approval workflows.
+## Limitations
+This project is designed for learning purposes and may require some adjustments to match all grading requirements.
+The mock AI model follows predefined rules and does not behave like a real Large Language Model (LLM).
+Refund records are stored locally and do not connect to a real payment system.
+
+## Future Improvements
+
+A production-ready system could include:
+
+User authentication and access control
+Secure storage of passwords and API keys
+System monitoring and logging
+Data quality and schema validation
+Data tracking and audit history
+Model performance monitoring
+Human approval workflows for critical decisions
